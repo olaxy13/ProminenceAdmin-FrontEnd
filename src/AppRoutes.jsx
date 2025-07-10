@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import ProtectedRoute from "./services/ProtectedRoute";
 import ProductDetails from "./pages/ProductDetails";
+import AddItem from "./pages/AddItem";
 
 export default function AppRoutes() {
   return (
@@ -15,14 +16,15 @@ export default function AppRoutes() {
         <Route
           path="/"
           element={
-            // <ProtectedRoute>
+            <ProtectedRoute>
             <Home />
-            // </ProtectedRoute>
+            </ProtectedRoute>
           }
         />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/add-item" element={<AddItem />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

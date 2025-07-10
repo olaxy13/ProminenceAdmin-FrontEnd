@@ -7,7 +7,7 @@ const ProtectedRoute = ({children}) => {
 
 // Checks if the user is authenticated by looking for a token cookie
 function isAuthenticated() {
-  return !!Cookies.get("token");
+  return !!Cookies.get("adminToken");
 }
 
 useEffect(()=>{
