@@ -8,3 +8,7 @@ export const apiKit = axios.create({
     },
     timeout: 50000,
 });
+export const apiKitForm = axios.create({
+  baseURL: "https://prominence-xn1b.onrender.com/",
+    timeout: 50000,
+});
