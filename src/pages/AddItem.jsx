@@ -7,31 +7,33 @@ import {
   laptopAccessories,
   phoneBrands,
   phoneAccessories,
+  colors,
 } from "../constants/constant";
 import { useNavigate } from "react-router";
 import { addProduct } from "../services/data";
-import Cookies from 'js-cookie'
-import {toast, ToastContainer} from 'react-toastify'
+import Cookies from "js-cookie";
+import { toast, ToastContainer } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 
 const AddItem = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [token, setToken] = useState()
+  const [token, setToken] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
       category: "",
       specifications: "",
-      color: '',
+      color: "",
       name: "",
       model: "",
       brand: "",
       price: "",
       description: "",
       photos: [],
+      isAvailable: "true",
     },
     validationSchema: addItemSchema,
     onSubmit: (values) => {
@@ -39,41 +41,43 @@ const AddItem = () => {
       // Convert values to FormData
       const formData = new FormData();
       Object.entries(values).forEach(([key, value]) => {
-        if (key === 'photos') {
+        if (key === "photos") {
           value.forEach((file) => {
-            formData.append('photos', file);
+            formData.append("photos", file);
           });
+        } else if (key === "isAvailable") {
+          formData.append("isAvailable", value === "true");
         } else {
           formData.append(key, value);
         }
       });
       addProduct(formData, token)
-      .then(res => {
-        console.log(res)
-        if(res.status === 201){
-          toast.success('Product created successfully')
-          // Invalidate productsList query so Home fetches latest data
-          queryClient.invalidateQueries(["productsList"]);
-          setTimeout(() => {
-            navigate('/')           
-          }, 2000);
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+        .then((res) => {
+          console.log(res);
+          if (res.status === 201) {
+            toast.success("Product created successfully");
+            // Invalidate productsList query so Home fetches latest data
+            queryClient.invalidateQueries(["productsList"]);
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
       // Handle form submission logic here
     },
   });
   useEffect(() => {
-      const token = Cookies.get("adminToken");
-      if(token){
-        setToken(token);
-      }
-    }, []);
+    const token = Cookies.get("adminToken");
+    if (token) {
+      setToken(token);
+    }
+  }, []);
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     // Add new files to the existing photos array
@@ -220,15 +224,34 @@ const AddItem = () => {
             )}
           </div>
           <div>
+            <label className="block font-medium mb-1">Available</label>
+            <select
+              name="isAvailable"
+              value={formik.values.isAvailable}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full border rounded px-3 py-2"
+            >
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+          <div>
             <label className="block font-medium mb-1">Color</label>
-            <input
-              type="text"
+            <select
               name="color"
               value={formik.values.color}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className="w-full border rounded px-3 py-2"
-            />
+            >
+              <option value="">Select a color</option>
+              {colors.map((color) => (
+                <option key={color} value={color}>
+                  {color}
+                </option>
+              ))}
+            </select>
             {formik.touched.color && formik.errors.color && (
               <div className="text-red-500 text-xs mt-1">
                 {formik.errors.color}
@@ -307,7 +330,7 @@ const AddItem = () => {
             className="w-full py-2 px-4 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             disabled={isLoading}
           >
-            {isLoading ? 'Adding...' : 'Add Item'}
+            {isLoading ? "Adding..." : "Add Item"}
           </button>
         </form>
       </div>

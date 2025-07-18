@@ -20,5 +20,7 @@ export const addItemSchema = Yup.object().shape({
       })
     )
     .min(1, "At least one image is required"),
- 
+  isAvailable: Yup.string()
+    .oneOf(["true", "false"], "Availability must be true or false")
+    .required("Availability is required"),
 });

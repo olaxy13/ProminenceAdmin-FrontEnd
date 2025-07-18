@@ -16,7 +16,7 @@ import {
   phoneBrands,
   phoneAccessories,
 } from "../constants/constant";
-import Loader from '../assets/loader.gif'
+import Loader from "../assets/loader.gif";
 import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import * as Yup from "yup";
@@ -95,29 +95,51 @@ const ProductDetails = () => {
     specifications: Yup.string().required("Specifications are required"),
     photos: Yup.array()
       .of(
-        Yup.mixed().test("fileType", "Only image files or URLs are allowed", (value) => {
-          if (!value) return true;
-          if (typeof value === "string") {
-            // Accept if it's a valid image URL (http/https and ends with image extension)
-            return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)$/i.test(value);
+        Yup.mixed().test(
+          "fileType",
+          "Only image files or URLs are allowed",
+          (value) => {
+            if (!value) return true;
+            if (typeof value === "string") {
+              // Accept if it's a valid image URL (http/https and ends with image extension)
+              return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)$/i.test(
+                value
+              );
+            }
+            return value.type && value.type.startsWith("image/");
           }
-          return value.type && value.type.startsWith("image/");
-        })
+        )
       )
       .min(1, "At least one image is required"),
+    isAvailable: Yup.string()
+      .oneOf(["true", "false"])
+      .required("Availability is required"),
   });
+
+  // Helper to strip HTML tags
+  const stripHtml = (html) =>
+    typeof html === "string"
+      ? html
+          .replace(/<[^>]+>/g, "")
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+      : html;
 
   const formik = useFormik({
     initialValues: {
       // category: editData?.category || "",
-      specifications: editData?.specifications || "",
-      color: editData?.color || '',
+      specifications: stripHtml(editData?.specifications) || "",
+      color: editData?.color || "",
       name: editData?.name || "",
       model: editData?.model || "",
       brand: editData?.brand || "",
       price: editData?.price || "",
-      description: editData?.description || "",
+      description: stripHtml(editData?.description) || "",
       photos: editData?.photos || [],
+      isAvailable:
+        typeof editData?.isAvailable === "boolean"
+          ? String(editData.isAvailable)
+          : "true",
     },
     validationSchema: editItemSchema,
     enableReinitialize: true,
@@ -125,24 +147,27 @@ const ProductDetails = () => {
       setLoading(true);
       setError("");
       setSuccess("");
-      console.log('values', values)
+      console.log("values", values);
       // Convert values to FormData
       const formData = new FormData();
       Object.entries(values).forEach(([key, value]) => {
-        if (key === 'photos') {
+        // if (key === "photos") {
+        if (key === "photos" && Array.isArray(value)) {
           value.forEach((fileOrUrl) => {
             // Only append File objects, skip URLs (they are already on server)
-            if (typeof fileOrUrl !== 'string') {
-              formData.append('photos', fileOrUrl);
-            }
+            // if (typeof fileOrUrl !== "string") {
+            formData.append("photos", fileOrUrl);
+            // }
           });
+        } else if (key === "isAvailable") {
+          // formData.append("isAvailable", value === "true");
+          formData.append("isAvailable", value === "true" ? "true" : "false");
         } else {
           formData.append(key, value);
         }
       });
       try {
-        await updateProductById(id, formData, token)
-        .then((res) => {
+        await updateProductById(id, formData, token).then((res) => {
           console.log(res);
           // Invalidate both productFetch and productsList queries
           queryClient.invalidateQueries(["productFetch", id]);
@@ -152,7 +177,7 @@ const ProductDetails = () => {
           toast.success("Product updated successfully");
         });
       } catch (err) {
-        console.log(err)
+        console.log(err);
         setError("Failed to update product.");
         toast.error("Failed to update");
       } finally {
@@ -176,9 +201,11 @@ const ProductDetails = () => {
         return [];
     }
   };
-
+  console.log(formik.values);
   const handleImageRemove = (imgToRemove) => {
-    const updatedPhotos = formik.values.photos.filter((img) => img !== imgToRemove);
+    const updatedPhotos = formik.values.photos.filter(
+      (img) => img !== imgToRemove
+    );
     formik.setFieldValue("photos", updatedPhotos);
     // If the removed image was selected, select another or null
     if (selectedImage === imgToRemove) {
@@ -196,15 +223,15 @@ const ProductDetails = () => {
     }
   };
 
-  console.log(formik.errors)
-  console.log(formik.values)
+  console.log(formik.errors);
+  console.log(formik.values);
 
   if (isLoading) {
     return (
-            <div className="flex justify-center items-center gap-8 p-4 md:p-8 bg-gray-50 min-h-screen">
-              <img src={Loader} alt="loader gif" className="w-10 h-10"/>
-            </div>
-          );
+      <div className="flex justify-center items-center gap-8 p-4 md:p-8 bg-gray-50 min-h-screen">
+        <img src={Loader} alt="loader gif" className="w-10 h-10" />
+      </div>
+    );
   }
   if (isError || !product) {
     return (
@@ -282,6 +309,19 @@ const ProductDetails = () => {
                   {formik.errors.name}
                 </div>
               )}
+            </div>
+            <div className="w-full">
+              <label className="block font-medium mb-1">Available</label>
+              <select
+                name="isAvailable"
+                value={formik.values.isAvailable}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full border rounded px-3 py-2"
+              >
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
             </div>
             {/* <div className="w-full">
               <label className="block font-medium mb-1">
@@ -439,9 +479,11 @@ const ProductDetails = () => {
                 Add Images
               </label>
               <div className="flex gap-2 flex-wrap">
-                {Array.isArray(formik.values.photos) && formik.values.photos.length > 0 ? (
+                {Array.isArray(formik.values.photos) &&
+                formik.values.photos.length > 0 ? (
                   formik.values.photos.map((img, idx) => {
-                    let src = typeof img === 'string' ? img : URL.createObjectURL(img);
+                    let src =
+                      typeof img === "string" ? img : URL.createObjectURL(img);
                     return (
                       <div key={idx} className="relative group">
                         <img
@@ -491,6 +533,13 @@ const ProductDetails = () => {
             {Object.entries(product).map(([key, value]) => {
               if (key === "id") return null;
               if (key === "createdAt") return null;
+              if (key === "price")
+                return (
+                  <div key={key} className="w-full mb-2">
+                    <span className="font-medium capitalize">{key}: </span>
+                    <p>{Number(value).toLocaleString()}</p>
+                  </div>
+                );
               if (key === "photos") {
                 return (
                   <div key={key} className="w-full mb-2">
@@ -522,6 +571,17 @@ const ProductDetails = () => {
                         />
                       </div>
                     )}
+                  </div>
+                );
+              }
+              if (key === "description" || key === "specifications") {
+                return (
+                  <div key={key} className="w-full mb-2">
+                    <span className="font-medium capitalize">{key}: </span>
+                    <div
+                      className="prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: value }}
+                    />
                   </div>
                 );
               }

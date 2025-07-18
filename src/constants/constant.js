@@ -1,8 +1,8 @@
 export const categories = [
-  {value:'laptop', name:"Laptop"},
-  {value:'laptopAccessory',name:"Laptop accessory"},
-  {value:'phone',name:"Phone"},
-  {value:'phoneAccessory',name:"Phone accessory"}
+  { value: "laptop", name: "Laptop" },
+  { value: "laptopAccessory", name: "Laptop accessory" },
+  { value: "phone", name: "Phone" },
+  { value: "phoneAccessory", name: "Phone accessory" },
 ];
 
 export const laptopBrands = [
@@ -40,7 +40,7 @@ export const laptopBrands = [
   "VAIO",
   "Xiaomi",
   "Zoostorm",
-  "Framework"
+  "Framework",
 ];
 
 export const laptopAccessories = [
@@ -75,7 +75,7 @@ export const laptopAccessories = [
   "External GPU (eGPU)",
   "Memory Card Reader",
   "USB-C Adapter",
-  "Laptop Skins or Decals"
+  "Laptop Skins or Decals",
 ];
 export const phoneBrands = [
   "Apple",
@@ -109,7 +109,7 @@ export const phoneBrands = [
   "Alcatel",
   "iTel",
   "BLU",
-  "Gionee"
+  "Gionee",
 ];
 export const phoneAccessories = [
   "Phone Case",
@@ -141,7 +141,24 @@ export const phoneAccessories = [
   "Phone Wallet",
   "Phone Lanyard",
   "VR Headset",
-  "AR Glasses"
+  "AR Glasses",
 ];
 
-
+export const colors = [
+  "Black",
+  "White",
+  "Gray",
+  "Silver",
+  "Gold",
+  "Blue",
+  "Red",
+  "Green",
+  "Yellow",
+  "Purple",
+  "Pink",
+  "Orange",
+  "Brown",
+  "Beige",
+  "Cyan",
+  "Magenta",
+];
