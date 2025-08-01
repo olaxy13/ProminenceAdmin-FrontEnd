@@ -1,8 +1,8 @@
 export const categories = [
   { value: "laptop", name: "Laptop" },
-  { value: "laptopAccessory", name: "Laptop accessory" },
+  { value: "laptop_accessory", name: "Laptop accessory" },
   { value: "phone", name: "Phone" },
-  { value: "phoneAccessory", name: "Phone accessory" },
+  { value: "phone_accessory", name: "Phone accessory" },
 ];
 
 export const laptopBrands = [
