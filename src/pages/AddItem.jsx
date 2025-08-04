@@ -89,11 +89,11 @@ const AddItem = () => {
     switch (formik.values.category) {
       case "laptop":
         return laptopBrands || [];
-      case "laptopAccessory":
+      case "laptop_accessory":
         return laptopAccessories || [];
       case "phone":
         return phoneBrands || [];
-      case "phoneAccessory":
+      case "phone_accessory":
         return phoneAccessories || [];
       default:
         return [];

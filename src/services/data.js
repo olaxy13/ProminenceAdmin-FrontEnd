@@ -5,8 +5,8 @@ import { apiKitForm } from "./base"
 export const loginAction = (data) => {
     return apiKit.post('auth/login', data)
 }
-export const fetchProducts = () => {
-    return apiKit.get('products')
+export const fetchProducts = (pageNumber) => {
+    return apiKit.get(`products?page=${pageNumber}`)
 }
 export const fetchProductById = (id) => {
     return apiKit.get(`products/${id}`)
