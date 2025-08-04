@@ -22,8 +22,6 @@ const Home = () => {
     getNextPageParam: (lastPage, allPages) => {
       // lastPage.data.data: array of products
       // lastPage.data.meta: { currentPage, totalPages }
-      console.log(lastPage.data.currentPage);
-      console.log(allPages);
       const meta = lastPage?.data;
       if (meta && meta.currentPage < meta.totalPages) {
         return meta.currentPage + 1;
@@ -32,7 +30,6 @@ const Home = () => {
     },
     staleTime: 10 * 60 * 1000,
   });
-  console.log(data);
   // Combine all products from all pages
   const productsList =
     data?.pages?.flatMap((page) => page?.data?.data || []) || [];

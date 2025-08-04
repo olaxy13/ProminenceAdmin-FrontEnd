@@ -31,7 +31,6 @@ const ProductDetails = () => {
     staleTime: 10 * 60 * 1000,
   });
   const product = data?.data?.data;
-  console.log("productDetails", product);
 
   const [editData, setEditData] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -62,7 +61,6 @@ const ProductDetails = () => {
     setLoading(true);
     deleteProduct(id, {}, token)
       .then((res) => {
-        console.log(res);
         if (res.status === 200) {
           toast.success(res.data.message);
           // Invalidate productsList query so Home fetches latest data
@@ -74,7 +72,7 @@ const ProductDetails = () => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
         setLoading(false);
         toast.error(err.response.data.message);
       });
@@ -147,7 +145,6 @@ const ProductDetails = () => {
       setLoading(true);
       setError("");
       setSuccess("");
-      console.log("values", values);
       // Convert values to FormData
       const formData = new FormData();
       Object.entries(values).forEach(([key, value]) => {
@@ -168,7 +165,6 @@ const ProductDetails = () => {
       });
       try {
         await updateProductById(id, formData, token).then((res) => {
-          console.log(res);
           // Invalidate both productFetch and productsList queries
           queryClient.invalidateQueries(["productFetch", id]);
           queryClient.invalidateQueries(["productsList"]);
@@ -177,7 +173,7 @@ const ProductDetails = () => {
           toast.success("Product updated successfully");
         });
       } catch (err) {
-        console.log(err);
+        // console.log(err);
         setError("Failed to update product.");
         toast.error("Failed to update");
       } finally {
@@ -201,7 +197,6 @@ const ProductDetails = () => {
         return [];
     }
   };
-  console.log(formik.values);
   const handleImageRemove = (imgToRemove) => {
     const updatedPhotos = formik.values.photos.filter(
       (img) => img !== imgToRemove
@@ -223,8 +218,6 @@ const ProductDetails = () => {
     }
   };
 
-  console.log(formik.errors);
-  console.log(formik.values);
 
   if (isLoading) {
     return (

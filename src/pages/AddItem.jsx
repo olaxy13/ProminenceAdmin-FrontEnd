@@ -53,7 +53,6 @@ const AddItem = () => {
       });
       addProduct(formData, token)
         .then((res) => {
-          console.log(res);
           if (res.status === 201) {
             toast.success("Product created successfully");
             // Invalidate productsList query so Home fetches latest data
@@ -64,7 +63,7 @@ const AddItem = () => {
           }
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         })
         .finally(() => {
           setIsLoading(false);
