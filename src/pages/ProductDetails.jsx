@@ -15,6 +15,7 @@ import {
   laptopAccessories,
   phoneBrands,
   phoneAccessories,
+  colors,
 } from "../constants/constant";
 import Loader from "../assets/loader.gif";
 import Cookies from "js-cookie";
@@ -147,9 +148,12 @@ const ProductDetails = () => {
       setSuccess("");
       // Convert values to FormData
       const formData = new FormData();
+      const newPhotoArray = [];
+      console.log(Object.entries(values));
       Object.entries(values).forEach(([key, value]) => {
         // if (key === "photos") {
         if (key === "photos" && Array.isArray(value)) {
+          // console.log(value);
           value.forEach((fileOrUrl) => {
             // Only append File objects, skip URLs (they are already on server)
             // if (typeof fileOrUrl !== "string") {
@@ -163,6 +167,7 @@ const ProductDetails = () => {
           formData.append(key, value);
         }
       });
+      // console.log(logFormData(formData));
       try {
         await updateProductById(id, formData, token).then((res) => {
           // Invalidate both productFetch and productsList queries
@@ -171,9 +176,12 @@ const ProductDetails = () => {
           setSuccess("Product updated successfully!");
           setEditMode(false);
           toast.success("Product updated successfully");
+          setTimeout(() => {
+              navigate("/");
+            }, 2000);
         });
       } catch (err) {
-        // console.log(err);
+        console.log(err);
         setError("Failed to update product.");
         toast.error("Failed to update");
       } finally {
@@ -181,6 +189,12 @@ const ProductDetails = () => {
       }
     },
   });
+
+  function logFormData(formData) {
+    for (let [key, value] of formData.entries()) {
+      // console.log(`${key}: ${value}`);
+    }
+  }
 
   // Helper to get brand/accessory options based on category
   const getBrandOptions = () => {
@@ -217,7 +231,6 @@ const ProductDetails = () => {
       setSelectedImage(files[0]);
     }
   };
-
 
   if (isLoading) {
     return (
@@ -408,7 +421,7 @@ const ProductDetails = () => {
                 </div>
               )}
             </div>
-            <div className="w-full">
+            {/* <div className="w-full">
               <label className="block font-medium mb-1">Color</label>
               <input
                 type="text"
@@ -418,6 +431,28 @@ const ProductDetails = () => {
                 onBlur={formik.handleBlur}
                 className="w-full border rounded px-3 py-2"
               />
+              {formik.touched.color && formik.errors.color && (
+                <div className="text-red-500 text-xs mt-1">
+                  {formik.errors.color}
+                </div>
+              )}
+            </div> */}
+            <div className="w-full">
+              <label className="block font-medium mb-1">Color</label>
+              <select
+                name="color"
+                value={formik.values.color}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full border rounded px-3 py-2"
+              >
+                <option value="">Select a color</option>
+                {colors.map((color) => (
+                  <option key={color} value={color}>
+                    {color}
+                  </option>
+                ))}
+              </select>
               {formik.touched.color && formik.errors.color && (
                 <div className="text-red-500 text-xs mt-1">
                   {formik.errors.color}
